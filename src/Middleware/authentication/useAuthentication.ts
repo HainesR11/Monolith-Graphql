@@ -1,7 +1,7 @@
 import express from "express";
 
-import { useLogger } from "../utils/logger";
-import { AuthHeader } from "../constants/Headers";
+import { logger } from "../../utils/logger";
+import { AuthHeader } from "../../constants/Headers";
 
 const NONAUTHENTICATION_PATHS = [];
 
@@ -10,8 +10,6 @@ const middlewear = (
   res: express.Response,
   next: express.NextFunction
 ) => {
-  const logger = useLogger();
-
   const requiresAuthentication = !NONAUTHENTICATION_PATHS.some((url) =>
     req.url.includes(url)
   );
