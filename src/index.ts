@@ -37,6 +37,15 @@ const server = new ApolloServer<ApolloServerContext>({
         await pool.connect().then(() => {
           logger.info("Connected to the Postgres Database");
         });
+
+        httpServer
+          .listen({ port: process.env.PORT })
+          .once("listening", () => {
+            logger.info(`Server ready at http://localhost:${process.env.PORT}`);
+          })
+          .on("error", (err) => {
+            logger.error(err);
+          });
       },
 
       async requestDidStart({ logger, request }) {
@@ -50,19 +59,8 @@ const server = new ApolloServer<ApolloServerContext>({
 
 await server.start();
 
-await new Promise<void>(() => {
-  httpServer
-    .listen({ port: process.env.PORT })
-    .once("listening", () => {
-      logger.info(`Server ready at http://localhost:${process.env.PORT}`);
-    })
-    .on("error", (err) => {
-      logger.error(err);
-    });
-});
-
 app.use(
-  "/",
+  "/graphiql",
   cors<cors.CorsRequest>(),
   express.json(),
   expressMiddleware(server, {

@@ -22,18 +22,21 @@ const UserTypes = new GraphQLObjectType({
   }),
 });
 
-const UsersQuery = new GraphQLObjectType({
+export const UsersQuery = new GraphQLObjectType({
   name: "UsersQuery",
   fields: {
     users: {
       type: new GraphQLList(UserTypes),
-      resolve: async () => await QueryWrapper({
-        query: "SELECT * FROM Users",
-        queryType: QueryTypes.Query,
-      })
+      resolve: async () =>
+        await QueryWrapper({
+          query: "SELECT * FROM Users",
+          queryType: QueryTypes.Query,
+        }),
     },
   },
 });
+
+console.log(UsersQuery.getFields());
 
 export default new GraphQLSchema({
   query: UsersQuery,
