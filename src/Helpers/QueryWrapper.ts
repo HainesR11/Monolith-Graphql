@@ -1,11 +1,25 @@
 import { pool } from "../Services/Postgres/postgres";
-import { QueryTypes, ResultsTypes } from "../types/types";
+import { QueryTypes, responseTypes } from "../types/types";
+import { logger } from "../utils/logger";
 
-type QueryWrapper = {
+interface IQueryWrapper {
   query: string;
   queryType: QueryTypes;
-  resultsType?: ResultsTypes;
+  responseType?: responseTypes;
   params?: Array<string>;
+  mapper?: (value: any) => void;
+}
+
+const remapper = (
+  row: any,
+  isSingleEntry: boolean,
+  mapper?: (value: any) => void
+) => {
+  if (mapper) {
+    return isSingleEntry ? mapper(row[0]) : row.map(mapper);
+  }
+
+  return isSingleEntry ? row[0] : row;
 };
 
 /**
@@ -13,23 +27,24 @@ type QueryWrapper = {
 
     @param query - The query to run
     @param queryType - The type of query
-    @param resultsType - The type of results to expect
+    @param responseType - The type of results to expect
+    @param params - The parameters for the query
+    @param mapper - The function to map the results to a different format
 **/
 const QueryWrapper = async ({
   query,
   queryType,
-  resultsType = ResultsTypes.Array,
+  responseType = responseTypes.Array,
   params = [],
-}: QueryWrapper) => {
+  mapper,
+}: IQueryWrapper) => {
   try {
+    const isSingleEntry = responseType === responseTypes.Single;
     const result = await pool.query(query, params);
 
-    if (resultsType === ResultsTypes.Single) {
-      return result.rows[0];
-    }
-
-    return result.rows;
+    return remapper(result.rows, isSingleEntry, mapper);
   } catch (err) {
+    logger.error(`Error running ${queryType}: ${err}`);
     throw new Error(`Error running ${queryType}`);
   }
 };
