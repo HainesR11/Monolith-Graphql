@@ -7,7 +7,7 @@ export enum QueryTypes {
   Mutation = "mutation",
 }
 
-export enum ResultsTypes {
+export enum responseTypes {
   Single = "Single",
   Array = "Array",
 }

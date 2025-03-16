@@ -7,9 +7,9 @@ import {
   GraphQLID,
 } from "graphql";
 import QueryWrapper from "../../Helpers/QueryWrapper";
-import { QueryTypes, ResultsTypes } from "../../types/types";
+import { QueryTypes, responseTypes } from "../../types/types";
 
-const PostType = new GraphQLObjectType({
+export const PostType = new GraphQLObjectType({
   name: "Post",
   fields: () => ({
     id: { type: GraphQLID },
@@ -40,7 +40,7 @@ const PostQuery = new GraphQLObjectType({
         await QueryWrapper({
           query: "SELECT * FROM Posts WHERE id = $1",
           queryType: QueryTypes.Query,
-          resultsType: ResultsTypes.Single,
+          responseType: responseTypes.Single,
           params: [args.id],
         }),
     },
