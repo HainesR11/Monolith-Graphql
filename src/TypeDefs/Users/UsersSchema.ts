@@ -30,7 +30,7 @@ export const UsersQuery = new GraphQLObjectType({
       resolve: async () =>
         await QueryWrapper({
           query: "SELECT * FROM Users",
-          queryType: QueryTypes.Query,
+          queryType: QueryTypes.Query, 
         }),
     },
   },
