@@ -12,8 +12,8 @@ interface IQueryWrapper {
 
 const remapper = (
   row: any,
-  isSingleEntry: boolean,
-  mapper?: (value: any) => void
+  mapper?: (value: any) => void,
+  isSingleEntry?: boolean
 ) => {
   if (mapper) {
     return isSingleEntry ? mapper(row[0]) : row.map(mapper);
@@ -39,13 +39,20 @@ const QueryWrapper = async ({
   mapper,
 }: IQueryWrapper) => {
   try {
+    const { rows } = await pool.query(query, params);
     const isSingleEntry = responseType === responseTypes.Single;
-    const result = await pool.query(query, params);
 
-    return remapper(result.rows, isSingleEntry, mapper);
+    switch (queryType) {
+      case QueryTypes.Query:
+        return remapper(rows, mapper, isSingleEntry);
+      case QueryTypes.Mutation:
+        return remapper(rows, mapper, isSingleEntry);
+      default:
+        throw new Error("Invalid query type");
+    }
   } catch (err) {
     logger.error(`Error running ${queryType}: ${err}`);
-    throw new Error(`Error running ${queryType}`);
+    throw new Error(`Error running ${queryType} - ${err}`);
   }
 };
 

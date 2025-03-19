@@ -23,19 +23,21 @@ const startApolloServer = async (app: Express) => {
   const server = new ApolloServer<ApolloServerContext>({
     typeDefs: TypeDefs,
     resolvers: CombinedResolvers,
-    logger: logger,
     introspection: true,
     plugins: [
       {
-        async serverWillStart({ logger }) {
+        async serverWillStart() {
           await pool.connect().then(() => {
             logger.info("Connected to the Postgres Database");
           });
         },
 
-        async requestDidStart({ logger, request }) {
+        async requestDidStart({ request }) {
           if (!isInterspectionQuery(request.query ?? "")) {
-            logger.info({ query: request.query });
+            logger.info("", {
+              type: "Query",
+              query: request.query ?? "",
+            });
           }
         },
       },
