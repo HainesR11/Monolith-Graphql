@@ -1,10 +1,16 @@
 import { PostsQueryResolvers } from "./Posts/PostResolvers";
-import { UserQueryResolvers } from "./Users/UsersResolvers";
+import {
+  UserMutationResolvers,
+  UserQueryResolvers,
+} from "./Users/UsersResolvers";
 
 const CombinedResolvers = {
   Query: {
     ...PostsQueryResolvers,
     ...UserQueryResolvers,
+  },
+  Mutation: {
+    ...UserMutationResolvers,
   },
 };
 

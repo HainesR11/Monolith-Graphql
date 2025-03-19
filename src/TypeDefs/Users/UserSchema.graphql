@@ -12,3 +12,21 @@ type Query {
   users: [User]!
   selectUser(id: ID!): User
 }
+
+type Mutation {
+  createUser(
+    firstName: String!
+    lastName: String!
+    email: String!
+    bio: String
+    username: String!
+  ): User!
+  updateUser(
+    id: ID!
+    firstName: String
+    lastName: String
+    email: String
+    bio: String
+  ): User!
+  deleteUser(id: ID!): User!
+}
