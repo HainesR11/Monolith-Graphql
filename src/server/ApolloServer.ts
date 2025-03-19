@@ -44,16 +44,14 @@ const startApolloServer = async (app: Express) => {
 
   await server.start();
 
-  // app.all("/graphiql", (_, res) => res.redirect("/"));
+  app.all("/graphiql", (_, res) => res.redirect("/"));
 
   server.applyMiddleware({
     app,
-    path: "/graphiql",
+    path: "/",
     cors: true,
     bodyParserConfig: true,
   });
-
-  // app.use("/graphiql", cors(), express.json());
 };
 
 export default startApolloServer;
