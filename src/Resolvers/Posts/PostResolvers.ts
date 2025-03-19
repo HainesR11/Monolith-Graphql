@@ -1,12 +1,5 @@
-import { GraphQLArgs, GraphQLFieldResolver } from "graphql";
-
 import { QueryTypes, responseTypes } from "../../types/types";
 import QueryWrapper from "../../Helpers/QueryWrapper";
-import { GraphQLFieldResolverParams } from "@apollo/server";
-
-type PostParams = {
-  id: string;
-};
 
 export const PostsQueryResolvers = {
   async posts() {
@@ -16,12 +9,14 @@ export const PostsQueryResolvers = {
     });
   },
 
-  //   async post(id: string) {
-  //     return await QueryWrapper({
-  //       query: "SELECT * FROM Posts WHERE id = $1",
-  //       queryType: QueryTypes.Query,
-  //       responseType: responseTypes.Single,
-  //       params: [id],
-  //     });
-  //   },
+  async post(_: unknown, { id }: { id: string }) {
+    return await QueryWrapper({
+      query: "SELECT * FROM Posts WHERE id = $1",
+      queryType: QueryTypes.Query,
+      responseType: responseTypes.Single,
+      params: [id],
+    });
+  },
 };
+
+export const PostMutationResolvers = {};
