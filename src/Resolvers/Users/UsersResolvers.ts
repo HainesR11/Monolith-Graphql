@@ -1,7 +1,7 @@
 import QueryWrapper from "../../Helpers/QueryWrapper";
 import { QueryTypes, responseTypes, TUsers } from "../../types/types";
 import { logger } from "../../utils/logger";
-import { userReturnMapper } from "./utils/UserReturnMapper";
+import { userQueryMapper, userReturnMapper } from "./utils/UserReturnMapper";
 
 export const UserQueryResolvers = {
   async users() {
@@ -12,12 +12,17 @@ export const UserQueryResolvers = {
     });
   },
 
-  async selectUser(_: unknown, { id }: TUsers) {
+  async selectUser(_: unknown, { id }: Partial<TUsers>) {
+    if (!id) {
+      logger.error("No ID provided for selectUser");
+      return new Error("No ID provided for selectUser");
+    }
+
     return await QueryWrapper({
       query: "SELECT * FROM Users WHERE user_key = $1",
       queryType: QueryTypes.Query,
       responseType: responseTypes.Single,
-      params: [id],
+      queryParams: [id],
       mapper: userReturnMapper,
     });
   },
@@ -28,6 +33,17 @@ export const UserMutationResolvers = {
     _: unknown,
     { firstName, lastName, bio, email, username }: TUsers
   ) {
+    const User = await QueryWrapper({
+      query: "SELECT * FROM Users WHERE email = $1",
+      queryType: QueryTypes.Query,
+      responseType: responseTypes.Single,
+      queryParams: [email],
+    });
+
+    if (User) {
+      return new Error("User already exists");
+    }
+
     const formattedParams = [
       firstName,
       lastName,
@@ -43,7 +59,39 @@ export const UserMutationResolvers = {
         "INSERT INTO Users (first_name, last_name, bio, email, username, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
       queryType: QueryTypes.Mutation,
       responseType: responseTypes.Single,
-      params: formattedParams,
+      queryParams: formattedParams,
+      mapper: userReturnMapper,
+    });
+  },
+
+  async deleteUser(_: unknown, { id }: TUsers) {
+    return "Under Maintenence";
+  },
+
+  async updateUser(_: unknown, props: Partial<TUsers>) {
+    const propsToUpdate = {
+      ...userQueryMapper(props),
+      updated_at: new Date().toDateString(),
+    };
+
+    let queryKeys: Array<string> = [];
+    let params: Array<string> = [];
+
+    Object.keys(propsToUpdate).forEach((key, i) => {
+      queryKeys.push(key + " = ($" + (i + 1) + ")");
+    });
+
+    Object.values(propsToUpdate).forEach((value, i) => {
+      return params.push(value as string);
+    });
+
+    return await QueryWrapper({
+      query: `UPDATE Users SET ${queryKeys.join(
+        ", "
+      )} WHERE user_key = $1 RETURNING *`,
+      queryType: QueryTypes.Mutation,
+      responseType: responseTypes.Single,
+      queryParams: [...params],
       mapper: userReturnMapper,
     });
   },

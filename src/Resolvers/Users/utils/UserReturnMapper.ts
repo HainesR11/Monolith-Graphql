@@ -10,3 +10,16 @@ export const userReturnMapper = (userProps: any) => {
     username: userProps.username,
   };
 };
+
+export const userQueryMapper = (userProps: any) => {
+  return {
+    ...(userProps.id && { user_key: userProps.id }),
+    ...(userProps.firstName && { first_name: userProps.firstName }),
+    ...(userProps.lastName && { last_name: userProps.lastName }),
+    ...(userProps.createdAt && { created_at: userProps.createdAt }),
+    ...(userProps.updatedAt && { updated_at: userProps.updatedAt }),
+    ...(userProps.bio && { bio: userProps.bio }),
+    ...(userProps.email && { email: userProps.email }),
+    ...(userProps.username && { username: userProps.username }),
+  };
+};
