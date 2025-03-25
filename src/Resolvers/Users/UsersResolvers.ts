@@ -1,6 +1,7 @@
 import QueryWrapper from "../../Helpers/QueryWrapper";
 import { QueryTypes, responseTypes, TUsers } from "../../types/types";
 import { logger } from "../../utils/logger";
+import { userKeySeperation } from "./utils/UserKeySeperation";
 import { userQueryMapper, userReturnMapper } from "./utils/UserReturnMapper";
 
 export const UserQueryResolvers = {
@@ -66,7 +67,23 @@ export const UserMutationResolvers = {
   },
 
   async deleteUser(_: unknown, { id }: TUsers) {
-    return "Under Maintenence";
+    if (!id) {
+      logger.error("No ID provided for deleteUser");
+      return new Error("No ID provided for deleteUser");
+    }
+
+    const deletedUser = await QueryWrapper({
+      query: "DELETE FROM Users WHERE user_key = $1 RETURNING *",
+      queryType: QueryTypes.Mutation,
+      responseType: responseTypes.Single,
+      queryParams: [id],
+    });
+
+    if (!deletedUser) {
+      return new Error("User not found");
+    }
+
+    return "User deleted successfully";
   },
 
   async updateUser(_: unknown, props: Partial<TUsers>) {
@@ -81,20 +98,9 @@ export const UserMutationResolvers = {
       return new Error("User not found");
     }
 
-    const propsToUpdate = {
-      ...userQueryMapper(props),
-      updated_at: new Date().toDateString(),
-    };
-
-    let queryKeys: Array<string> = [];
-    let params: Array<string> = [];
-
-    Object.keys(propsToUpdate).forEach((key, i) => {
-      queryKeys.push(key + " = ($" + (i + 1) + ")");
-    });
-
-    Object.values(propsToUpdate).forEach((value, i) => {
-      return params.push(value as string);
+    const { queryKeys, params } = userKeySeperation({
+      props,
+      mapper: userQueryMapper,
     });
 
     return await QueryWrapper({

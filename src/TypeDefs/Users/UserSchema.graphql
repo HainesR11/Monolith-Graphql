@@ -30,5 +30,5 @@ type Mutation {
     bio: String
     username: String
   ): User!
-  deleteUser(id: ID!): User!
+  deleteUser(id: ID!): String!
 }
