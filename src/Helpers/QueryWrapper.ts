@@ -6,7 +6,7 @@ interface IQueryWrapper {
   query: string;
   queryType: QueryTypes;
   responseType?: responseTypes;
-  params?: Array<string>;
+  queryParams?: Array<string>;
   mapper?: (value: any) => void;
 }
 
@@ -35,11 +35,11 @@ const QueryWrapper = async ({
   query,
   queryType,
   responseType = responseTypes.Array,
-  params = [],
+  queryParams = [],
   mapper,
 }: IQueryWrapper) => {
   try {
-    const { rows } = await pool.query(query, params);
+    const { rows } = await pool.query(query, queryParams);
     const isSingleEntry = responseType === responseTypes.Single;
 
     switch (queryType) {

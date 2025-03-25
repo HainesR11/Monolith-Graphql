@@ -14,7 +14,7 @@ export const PostsQueryResolvers = {
       query: "SELECT * FROM Posts WHERE id = $1",
       queryType: QueryTypes.Query,
       responseType: responseTypes.Single,
-      params: [id],
+      queryParams: [id],
     });
   },
 };
