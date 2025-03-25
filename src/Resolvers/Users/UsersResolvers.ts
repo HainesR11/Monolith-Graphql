@@ -12,6 +12,7 @@ export const UserQueryResolvers = {
     });
   },
 
+  //Add catch here if no user is found
   async selectUser(_: unknown, { id }: Partial<TUsers>) {
     if (!id) {
       logger.error("No ID provided for selectUser");
@@ -69,6 +70,17 @@ export const UserMutationResolvers = {
   },
 
   async updateUser(_: unknown, props: Partial<TUsers>) {
+    const User = await QueryWrapper({
+      query: "SELECT * FROM Users WHERE user_key = $1",
+      queryType: QueryTypes.Query,
+      responseType: responseTypes.Single,
+      queryParams: [props.id ?? ""],
+    });
+
+    if (!User) {
+      return new Error("User not found");
+    }
+
     const propsToUpdate = {
       ...userQueryMapper(props),
       updated_at: new Date().toDateString(),
