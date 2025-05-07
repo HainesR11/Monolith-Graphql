@@ -2,7 +2,7 @@ import QueryWrapper from "../../Helpers/QueryWrapper";
 import { QueryTypes, responseTypes, TUsers } from "../../types/types";
 import { logger } from "../../utils/logger";
 import { userKeySeperation } from "./utils/UserKeySeperation";
-import { userQueryMapper, userReturnMapper } from "./utils/UserReturnMapper";
+import { userQueryMapper, userReturnMapper } from "./utils/UserMappers";
 
 export const UserQueryResolvers = {
   async users() {

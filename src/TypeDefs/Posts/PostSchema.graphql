@@ -11,3 +11,11 @@ type Query {
   posts: [Post]
   post(id: ID!): Post
 }
+
+type Mutation {
+  createPost(userId: String, name: String, content: String): String
+  updatePost(id: ID!, userId: String, name: String, content: String): String
+  deletePost(id: ID!): String
+
+  likePost(postId: ID!, userId: String): String
+}
