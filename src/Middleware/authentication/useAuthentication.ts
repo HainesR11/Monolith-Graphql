@@ -3,7 +3,16 @@ import express from "express";
 import { logger } from "../../utils/logger";
 import { AuthHeader } from "../../constants/Headers";
 
-const NONAUTHENTICATION_PATHS = [];
+const NONAUTHENTICATION_PATHS = [
+  "/graphiql",
+  "/graphql",
+  "/healthcheck",
+  "/api/v1/healthcheck",
+  "/api/v1/graphql",
+  "/api/v1/graphiql",
+  "/api/v1/graphql/",
+  "/api/v1/graphiql/",
+];
 
 const middlewear = (
   req: express.Request,

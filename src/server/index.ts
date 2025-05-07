@@ -6,11 +6,14 @@ import { logger } from "../utils/logger";
 
 // Server
 import startApolloServer from "./ApolloServer";
+import AuthenticationMiddlewear from "../Middleware/authentication/useAuthentication";
 
 const startServer = () => {
   const app = express();
 
   const httpServer = http.createServer(app);
+
+  // app.use(AuthenticationMiddlewear);
 
   httpServer
     .listen({ port: process.env.PORT })
