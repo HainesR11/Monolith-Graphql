@@ -1,8 +1,10 @@
 import QueryWrapper from "../../Helpers/QueryWrapper";
 import { QueryTypes, responseTypes, TUsers } from "../../types/types";
+import CatchAsync from "../../utils/catchAsync";
 import { logger } from "../../utils/logger";
 import { userKeySeperation } from "./utils/UserKeySeperation";
 import { userQueryMapper, userReturnMapper } from "./utils/UserMappers";
+import { v4 as uuidv4 } from "uuid";
 
 export const UserQueryResolvers = {
   async users() {
@@ -33,20 +35,21 @@ export const UserQueryResolvers = {
 export const UserMutationResolvers = {
   async createUser(
     _: unknown,
-    { firstName, lastName, bio, email, username }: TUsers
+    { firstName, lastName, bio, email, username, CSUId }: TUsers
   ) {
-    const User = await QueryWrapper({
+    const existingUser = await QueryWrapper({
       query: "SELECT * FROM Users WHERE email = $1",
       queryType: QueryTypes.Query,
-      responseType: responseTypes.Single,
+      responseType: responseTypes.Array,
       queryParams: [email],
     });
 
-    if (User) {
+    if (existingUser || existingUser?.length !== 0) {
       return new Error("User already exists");
     }
 
     const formattedParams = [
+      CSUId,
       firstName,
       lastName,
       bio,
@@ -56,9 +59,15 @@ export const UserMutationResolvers = {
       new Date().toDateString(),
     ];
 
+    //? Do we add in a call to MongoDB here to create a user in MongoDB as well?
+    //? If so we need to make a call to the MongoDB to delete the user?
+
+    //? ^ Yes we do, we can have a unique user id to link the two databases together. e.g. CSUId (Cross Source User ID or Cross System User ID)
+    //? Can use the CSUId to remove the entry from both databases
+
     return await QueryWrapper({
       query:
-        "INSERT INTO Users (first_name, last_name, bio, email, username, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+        "INSERT INTO Users (csuid, first_name, last_name, bio, email, username, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
       queryType: QueryTypes.Mutation,
       responseType: responseTypes.Single,
       queryParams: formattedParams,

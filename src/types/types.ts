@@ -23,6 +23,7 @@ export type TUsers = {
   username: string;
   createdAt: string;
   updatedAt: string;
+  CSUId: string;
 };
 
 export interface TLogger extends Logger {
@@ -55,3 +56,24 @@ export interface TLogger extends Logger {
     }
   ): Logger;
 }
+
+export type TPostUser = {
+  image: unknown;
+  name: string;
+  username: string;
+  type?: "Like" | "Love" | "Idea";
+};
+
+export type TPostComment = {
+  user: TPostUser;
+  data: string;
+};
+
+export type TPost = {
+  postId: string;
+  user: TPostUser;
+  timestamp: string;
+  data: { content: string; image?: unknown };
+  likes: TPostUser[];
+  comments: TPostComment[];
+};

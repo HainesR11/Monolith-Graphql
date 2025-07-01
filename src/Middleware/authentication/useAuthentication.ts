@@ -1,18 +1,10 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 
 import { logger } from "../../utils/logger";
 import { AuthHeader } from "../../constants/Headers";
 
-const NONAUTHENTICATION_PATHS = [
-  "/graphiql",
-  "/graphql",
-  "/healthcheck",
-  "/api/v1/healthcheck",
-  "/api/v1/graphql",
-  "/api/v1/graphiql",
-  "/api/v1/graphql/",
-  "/api/v1/graphiql/",
-];
+const NONAUTHENTICATION_PATHS = ["/graphiql", "/graphql", "/healthcheck"];
 
 const middlewear = (
   req: express.Request,
@@ -23,18 +15,30 @@ const middlewear = (
     req.url.includes(url)
   );
 
-  if (requiresAuthentication) {
-    const token = req.header(AuthHeader);
+  const token = req.header(AuthHeader);
 
-    if (!token) {
-      logger.error({
-        message: "[Authentication] Header is missing authentication token",
-        key: "http.header.auth",
-      });
-      res.sendStatus(401);
-    } else {
-      next();
-    }
+  if (!requiresAuthentication) {
+    return next();
+  }
+
+  if (!token) {
+    logger.error({
+      message: "[Authentication] Header is missing authentication token",
+      key: "http.header.auth",
+    });
+    res.sendStatus(401);
+  }
+
+  const isValidToken = () =>
+    jwt.verify(token as string, process.env.MONGO_DB_PASSWORD as string);
+
+  if (!isValidToken) {
+    logger.error({
+      message:
+        "[Authentication] Token is invalid, Please authenticate and try again ",
+      key: "http.header.auth",
+    });
+    res.sendStatus(401);
   } else {
     next();
   }
