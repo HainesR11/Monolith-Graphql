@@ -13,13 +13,13 @@ const startServer = () => {
 
   const httpServer = http.createServer(app);
 
-  // app.use(AuthenticationMiddlewear);
+  app.use(AuthenticationMiddlewear);
 
   httpServer
     .listen({ port: process.env.PORT })
     .once("listening", () => {
-      logger.info(`Server ready at http://localhost:${process.env.PORT}`);
       startApolloServer(app);
+      logger.info(`Server ready at http://localhost:${process.env.PORT}`);
     })
     .on("error", (err) => {
       logger.error(err);

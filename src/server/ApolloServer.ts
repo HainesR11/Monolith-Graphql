@@ -36,7 +36,7 @@ const startApolloServer = async (app: Express) => {
 
         async requestDidStart({ request }) {
           if (!isInterspectionQuery(request.query ?? "")) {
-            logger.info("", {
+            logger.info({
               type: "Query",
               query: request.query ?? "",
             });
