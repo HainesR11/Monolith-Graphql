@@ -5,10 +5,12 @@ type Post {
   content: String
   createdAt: String
   updatedAt: String
+  likes: [Int]
+  comments: [String]
 }
 
 type Query {
-  posts: [Post]
+  posts(limit: Int, offset: Int): [Post]
   post(id: ID!): Post
 }
 
