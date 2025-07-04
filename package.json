@@ -4,7 +4,9 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec ts-node -r dotenv/config src/server/index.ts"
+    "start": "nodemon --exec ts-node -r dotenv/config src/server/index.ts",
+    "docker-build": "docker build -t monolith .",
+    "docker-run": "docker run -it --rm -p 4004:4004 --env-file .env -e POSTGRES_HOST=host.docker.internal monolith"
   },
   "keywords": [],
   "author": "",
@@ -15,16 +17,16 @@
     "@apollo/server": "^4.11.3",
     "@graphql-tools/schema": "^10.0.21",
     "apollo-server-express": "^3.13.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "express-graphql": "^0.12.0",
-    "graphql": "^16.10.0",
-    "graphql-import": "^1.0.2",
-    "http": "^0.0.1-security",
-    "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.3",
-    "uuid": "^11.1.0"
+    "cors": "2.8.5",
+    "dotenv": "16.4.7",
+    "express": "4.21.2",
+    "express-graphql": "0.12.0",
+    "graphql": "16.10.0",
+    "graphql-import": "1.0.2",
+    "http": "0.0.1-security",
+    "jsonwebtoken": "9.0.2",
+    "pg": "8.13.3",
+    "uuid": "11.1.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

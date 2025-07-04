@@ -1,3 +1,7 @@
 demoServer.js
 .env
 node_modules
+
+# OSX
+#
+.DS_Store
