@@ -2,11 +2,11 @@ import pg from "pg";
 const { Pool } = pg;
 
 export const pool = new Pool({
-  host: "localhost",
+  host: process.env.POSTGRES_HOST,
   database: "devnotion_dev",
   user: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
-  port: 1209,
+  port: parseInt(process.env.POSTGRES_PORT ?? ""),
 });
 
 pool.on("error", (err) => {

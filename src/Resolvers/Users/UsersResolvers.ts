@@ -1,6 +1,5 @@
 import QueryWrapper from "../../Helpers/QueryWrapper";
 import { QueryTypes, responseTypes, TUsers } from "../../types/types";
-import CatchAsync from "../../utils/catchAsync";
 import { logger } from "../../utils/logger";
 import { userKeySeperation } from "./utils/UserKeySeperation";
 import { userQueryMapper, userReturnMapper } from "./utils/UserMappers";

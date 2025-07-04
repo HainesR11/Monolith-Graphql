@@ -32,10 +32,7 @@ const querySwitch = ({ query }: ITransformableInfo) => {
 };
 
 const environment = () => {
-  if (process.env.NODE_ENV === "prod") {
-    return "production";
-  }
-  return "development";
+  return process.env.NODE_ENV === "prod" ? "production" : "development";
 };
 
 const customFormatter = format((info: ITransformableInfo) => {
