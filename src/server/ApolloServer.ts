@@ -20,12 +20,10 @@ const startApolloServer = async (app: Express) => {
     return false;
   };
 
-  const isProduction = process.env.NODE_ENV === "production";
-
   const server = new ApolloServer<ApolloServerContext>({
     typeDefs: TypeDefs,
     resolvers: CombinedResolvers,
-    introspection: isProduction,
+    introspection: true,
     plugins: [
       {
         async serverWillStart() {

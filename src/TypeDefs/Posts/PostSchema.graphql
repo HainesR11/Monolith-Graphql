@@ -1,17 +1,28 @@
+type User {
+  name: String
+}
+
 type Post {
   id: ID!
-  userId: String
-  name: String
+  author: User
+  title: String
   content: String
   createdAt: String
   updatedAt: String
-  likes: [Int]
-  comments: [String]
+}
+
+type Comment {
+  id: ID!
+  postId: ID!
+  userId: String
+  content: String
+  createdAt: String
 }
 
 type Query {
   posts(limit: Int, offset: Int): [Post]
   post(id: ID!): Post
+  getComments(postId: ID!, limit: Int, offset: Int): [Comment]
 }
 
 type Mutation {

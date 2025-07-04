@@ -6,7 +6,7 @@ interface IQueryWrapper {
   query: string;
   queryType: QueryTypes;
   responseType?: responseTypes;
-  queryParams?: Array<string | number>;
+  queryParams?: Array<string | number | string[]>;
   mapper?: (value: any) => void;
 }
 
