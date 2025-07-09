@@ -27,21 +27,25 @@ const middlewear = (
       key: "http.header.auth",
     });
     res.sendStatus(401);
-  }
+  };
 
-  const isValidToken = () =>
-    jwt.verify(token as string, process.env.MONGO_DB_PASSWORD as string);
-
-  if (!isValidToken) {
-    logger.error({
-      message:
-        "[Authentication] Token is invalid, Please authenticate and try again ",
-      key: "http.header.auth",
-    });
-    res.sendStatus(401);
-  } else {
-    next();
-  }
+  jwt.verify(
+    token as string,
+    process.env.MONGO_DB_PASSWORD as string,
+    (err) => {
+      if (err) {
+        const errorMessage = {
+          message:
+            "[Authentication] Token is invalid, Please authenticate and try again.",
+          key: "http.header.auth",
+        };
+        logger.error(errorMessage);
+        res.sendStatus(401).json(errorMessage);
+      } else {
+        next();
+      }
+    }
+  );
 };
 
 export default middlewear;
