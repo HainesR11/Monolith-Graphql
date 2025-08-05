@@ -3,10 +3,10 @@ import { QueryTypes, responseTypes, TUsers } from "../../types/types";
 import { logger } from "../../utils/logger";
 import { userKeySeperation } from "./utils/UserKeySeperation";
 import { userQueryMapper, userReturnMapper } from "./utils/UserMappers";
-import { v4 as uuidv4 } from "uuid";
+import QueryError from "../../utils/QueryError";
 
 export const UserQueryResolvers = {
-  async users() {
+  async selectAllUsers() {
     return await QueryWrapper({
       query: "SELECT * FROM Users",
       queryType: QueryTypes.Query,
@@ -22,11 +22,14 @@ export const UserQueryResolvers = {
     }
 
     return await QueryWrapper({
-      query: "SELECT * FROM Users WHERE user_key = $1",
+      query: "SELECT * FROM Users WHERE csuid = $1",
       queryType: QueryTypes.Query,
       responseType: responseTypes.Single,
       queryParams: [id],
       mapper: userReturnMapper,
+      onError: (error) => {
+        return new QueryError(`No User found for ID: ${id}`, error, "Query");
+      },
     });
   },
 };
@@ -61,7 +64,7 @@ export const UserMutationResolvers = {
     //? Do we add in a call to MongoDB here to create a user in MongoDB as well?
     //? If so we need to make a call to the MongoDB to delete the user?
 
-    //? ^ Yes we do, we can have a unique user id to link the two databases together. e.g. CSUId (Cross Source User ID or Cross System User ID)
+    //? ^ Yes we do, we can have a unique user id to link the two databases together. e.g. CSUId (Cross System User ID)
     //? Can use the CSUId to remove the entry from both databases
 
     return await QueryWrapper({
@@ -95,11 +98,16 @@ export const UserMutationResolvers = {
   },
 
   async updateUser(_: unknown, props: Partial<TUsers>) {
+    if (!props.id) {
+      logger.error("No ID provided for updateUser");
+      return new Error("No ID provided for updateUser");
+    }
+
     const User = await QueryWrapper({
       query: "SELECT * FROM Users WHERE user_key = $1",
       queryType: QueryTypes.Query,
       responseType: responseTypes.Single,
-      queryParams: [props.id ?? ""],
+      queryParams: [props.id],
     });
 
     if (!User) {

@@ -20,15 +20,15 @@ type Comment {
 }
 
 type Query {
-  posts(limit: Int, offset: Int): [Post]
-  post(id: ID!): Post
+  getPosts(limit: Int, offset: Int): [Post]
+  getPost(id: ID!): Post
   getComments(postId: ID!, limit: Int, offset: Int): [Comment]
 }
 
 type Mutation {
-  createPost(userId: String, name: String, content: String): String
-  updatePost(id: ID!, userId: String, name: String, content: String): String
+  createPost(userId: ID!, content: String): String
+  updatePost(id: ID!, content: String): String
   deletePost(id: ID!): String
 
-  likePost(postId: ID!, userId: String): String
+  likePost(postId: ID!, userId: ID!): String
 }
