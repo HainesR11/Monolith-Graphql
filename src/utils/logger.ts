@@ -17,7 +17,7 @@ const messageSwitch = ({ type, query, level, message }: ITransformableInfo) => {
   switch (true) {
     case (type === "Query" || type === "Mutation") && message === undefined:
       return `${type} ran successfully`;
-    case level === "error":
+    case level === "Error":
       return `Error running ${query?.type}`;
     default:
       return message;

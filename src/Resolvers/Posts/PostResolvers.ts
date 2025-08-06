@@ -10,7 +10,6 @@ export const PostsQueryResolvers = {
    *
    * @param Limit - Limit the number of Posts returned
    * @param Offset - Offset the number of Posts returned
-   * @returns
    */
   async getPosts(
     _: unknown,
@@ -18,7 +17,7 @@ export const PostsQueryResolvers = {
   ) {
     return await QueryWrapper({
       query:
-        "SELECT usr.first_name, usr.last_name, usr.user_key as author_id, pst.* FROM Posts pst JOIN Users usr ON pst.author_id = usr.user_key ORDER BY pst.created_at DESC LIMIT $1 OFFSET $2",
+        "SELECT usr.* as author_id, pst.*, COUNT(cmt.*) as comment_count FROM Posts pst JOIN Users usr ON pst.author_id = usr.user_key LEFT JOIN Comments cmt ON pst.id = cmt.post_id GROUP BY pst.id, usr.first_name, usr.last_name, usr.user_key ORDER BY pst.created_at DESC LIMIT $1 OFFSET $2",
       queryType: QueryTypes.Query,
       responseType: responseTypes.Array,
       queryParams: [limit ?? 10, offset ?? 0],
@@ -33,23 +32,28 @@ export const PostsQueryResolvers = {
   /**
    *
    * @param Id - The ID of the Post to fetch from database
-   * @returns
    */
   async getPost(_: unknown, { id }: { id: string }) {
     return await QueryWrapper({
-      query: "SELECT * FROM Posts WHERE id = $1",
+      query:
+        "SELECT usr.*, pst.*, COUNT(cmt.*) as comment_count FROM Posts pst JOIN Users usr ON pst.author_id = usr.user_key LEFT JOIN Comments cmt ON pst.id = cmt.post_id WHERE pst.id = $1 GROUP BY pst.id, usr.first_name, usr.last_name, usr.user_key",
       queryType: QueryTypes.Query,
       responseType: responseTypes.Single,
       queryParams: [id],
+      mapper: PostMapper,
     });
   },
 
+  /**
+   *
+   * @param postId - The ID of the Post to fetch the comments from database
+   */
   async getComments(
     _: unknown,
     {
       postId,
-      limit,
-      offset,
+      limit = 10,
+      offset = 0,
     }: { postId: string; limit?: number; offset?: number }
   ) {
     return await QueryWrapper({
@@ -59,6 +63,10 @@ export const PostsQueryResolvers = {
       responseType: responseTypes.Array,
       queryParams: [postId, limit ?? 10, offset ?? 0],
       mapper: CommentMapper,
+      onError: (error) => {
+        logger.error(`Error fetching comments for post ${postId}: ${error}`);
+        return new QueryError("Failed to fetch comments", error);
+      },
     });
   },
 };

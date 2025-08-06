@@ -57,7 +57,7 @@ const QueryWrapper = async ({
   } catch (err) {
     logger.error(`Error running ${queryType}: ${err}`);
     return onError
-      ? onError(err as unknown as Error)
+      ? onError(err as Error)
       : new QueryError("Query failed", err as Error, queryType);
   }
 };
