@@ -1,4 +1,5 @@
 import { TUsers } from "../../../types/types";
+import { logger } from "../../../utils/logger";
 
 export const userReturnMapper = (userProps: any) => {
   return {
@@ -10,6 +11,7 @@ export const userReturnMapper = (userProps: any) => {
     bio: userProps.bio,
     email: userProps.email,
     username: userProps.username,
+    csuid: userProps.csuid,
   };
 };
 
