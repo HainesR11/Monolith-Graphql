@@ -15,9 +15,9 @@ interface ITransformableInfo extends TransformableInfo {
 
 const messageSwitch = ({ type, query, level, message }: ITransformableInfo) => {
   switch (true) {
-    case type === "Query" || type === "Mutation":
-      return `${type} ran Successfully`;
-    case level === "Error":
+    case (type === "Query" || type === "Mutation") && message === undefined:
+      return `${type} ran successfully`;
+    case level === "error":
       return `Error running ${query?.type}`;
     default:
       return message;
@@ -27,7 +27,7 @@ const messageSwitch = ({ type, query, level, message }: ITransformableInfo) => {
 const querySwitch = ({ query }: ITransformableInfo) => {
   switch (true) {
     case query?.type === "Query" || query?.type === "Mutation":
-      return { query: query?.query, type: query?.type };
+      return { [query.type]: query?.query, type: query?.type };
   }
 };
 
@@ -37,7 +37,8 @@ const environment = () => {
 
 const customFormatter = format((info: ITransformableInfo) => {
   return {
-    ...{ ...info, message: messageSwitch(info) },
+    ...{ ...info },
+    ...{ message: messageSwitch(info) },
     ...(info.query !== undefined && querySwitch(info)),
     environment: environment().toLocaleUpperCase(),
     timestamp: new Date(),

@@ -1,6 +1,7 @@
 import { pool } from "../Services/Postgres/postgres";
 import { QueryTypes, responseTypes } from "../types/types";
 import { logger } from "../utils/logger";
+import QueryError from "../utils/QueryError";
 
 interface IQueryWrapper {
   query: string;
@@ -8,6 +9,7 @@ interface IQueryWrapper {
   responseType?: responseTypes;
   queryParams?: Array<string | number | string[]>;
   mapper?: (value: any) => void;
+  onError?: (error: Error) => void;
 }
 
 const remapper = (
@@ -30,6 +32,7 @@ const remapper = (
     @param responseType - The type of results to expect
     @param params - The parameters for the query
     @param mapper - The function to map the results to a different format
+    @param onError - The function to call on error
 **/
 const QueryWrapper = async ({
   query,
@@ -37,6 +40,7 @@ const QueryWrapper = async ({
   responseType = responseTypes.Array,
   queryParams = [],
   mapper,
+  onError,
 }: IQueryWrapper) => {
   try {
     const { rows } = await pool.query(query, queryParams);
@@ -52,7 +56,9 @@ const QueryWrapper = async ({
     }
   } catch (err) {
     logger.error(`Error running ${queryType}: ${err}`);
-    throw new Error(`Error running ${queryType} - ${err}`);
+    return onError
+      ? onError(err as unknown as Error)
+      : new QueryError("Query failed", err as Error, queryType);
   }
 };
 

@@ -10,7 +10,7 @@ type User {
 }
 
 type Query {
-  users: [User]!
+  selectAllUsers: [User]!
   selectUser(id: ID!): User
 }
 

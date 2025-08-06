@@ -6,11 +6,14 @@ import { ApolloServerContext } from "../types/types";
 
 // Schemas
 
+//Services
+import pool from "../Services/Postgres/postgres";
+
 // Middleware
 import { logger } from "../utils/logger";
-import pool from "../Services/Postgres/postgres";
 import CombinedResolvers from "../Resolvers";
 import { TypeDefs } from "../TypeDefs";
+import getRequestType from "../utils/getRequestType";
 
 const startApolloServer = async (app: Express) => {
   const isInterspectionQuery = (query: string) => {
@@ -34,8 +37,8 @@ const startApolloServer = async (app: Express) => {
 
         async requestDidStart({ request }) {
           if (!isInterspectionQuery(request.query ?? "")) {
-            logger.info({
-              type: "Query",
+            logger.info(undefined, {
+              type: getRequestType(request.query),
               query: request.query ?? "",
             });
           }
