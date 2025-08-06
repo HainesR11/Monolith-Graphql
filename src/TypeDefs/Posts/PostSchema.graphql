@@ -9,6 +9,7 @@ type Post {
   content: String
   createdAt: String
   updatedAt: String
+  commentCount: Int
 }
 
 type Comment {
