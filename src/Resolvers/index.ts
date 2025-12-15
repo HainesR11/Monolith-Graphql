@@ -1,7 +1,5 @@
-import {
-  PostMutationResolvers,
-  PostsQueryResolvers,
-} from "./Posts/PostResolvers";
+import { PostMutationResolvers } from "./Posts/PostMutationResolvers";
+import { PostsQueryResolvers } from "./Posts/PostQueryResolvers";
 import {
   UserMutationResolvers,
   UserQueryResolvers,
