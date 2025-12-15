@@ -24,16 +24,18 @@
 # # Start the development server using nodemon
 # CMD ["yarn", "start"]
 
-FROM node:24-alpine3.21 AS base
+FROM node:25-alpine3.23 AS BASE
+
+FROM BASE AS build
 ENV APP_HOME=/app
 
-RUN mkdir -p $APP_HOME
+RUN mkdir -p ${APP_HOME}
 
 WORKDIR $APP_HOME
 
 COPY package.json yarn.lock .npmrc $APP_HOME/
 
-FROM base AS dependencies
+FROM BASE AS dependencies
 RUN yarn install \
     --non-interactive \
     --frozen-lockfile \
@@ -43,7 +45,7 @@ RUN yarn install \
 
 RUN yarn add -D nodemon ts-node typescript
 
-FROM base AS release
+FROM BASE AS release
 COPY --from=dependencies $APP_HOME/node_modules $APP_HOME/node_modules
 COPY . $APP_HOME
 EXPOSE 4004
