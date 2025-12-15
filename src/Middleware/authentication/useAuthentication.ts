@@ -30,7 +30,8 @@ const middlewear = (
     return res.status(401).json(message);
   }
 
-  jwt.verify(token, process.env.MONGO_DB_PASSWORD as string, (err) => {
+  //^ This will be changed to use OAuth tokens instead of JWTs in the future
+  jwt.verify(token, process.env.JWT_SECRET as string, (err) => {
     if (err) {
       const errorMessage = {
         message:

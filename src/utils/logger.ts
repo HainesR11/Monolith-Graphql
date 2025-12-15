@@ -37,8 +37,8 @@ const environment = () => {
 
 const customFormatter = format((info: ITransformableInfo) => {
   return {
-    ...{ ...info },
-    ...{ message: messageSwitch(info) },
+    ...info,
+    message: messageSwitch(info),
     ...(info.query !== undefined && querySwitch(info)),
     environment: environment().toLocaleUpperCase(),
     timestamp: new Date(),

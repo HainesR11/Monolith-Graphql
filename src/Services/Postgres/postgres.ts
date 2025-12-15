@@ -6,7 +6,7 @@ export const pool = new Pool({
   database: "devnotion_dev",
   user: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
-  port: parseInt(process.env.POSTGRES_PORT ?? ""),
+  port: Number.parseInt(process.env.POSTGRES_PORT ?? ""),
 });
 
 pool.on("error", (err) => {
